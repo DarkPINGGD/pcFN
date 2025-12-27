@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Submit Record</title>
+<style>
+body{
+  background:#081a3a;
+  font-family:Arial;
+  color:white;
+}
+.container{
+  max-width:500px;
+  margin:80px auto;
+  background:#000c;
+  padding:30px;
+  border-radius:12px;
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+}
+button{
+  background:#1e90ff;
+  color:white;
+  font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>Submit Record</h1>
+
+<input id="nick" placeholder="Your Nick">
+<input id="level" placeholder="Level Name">
+<input id="yt" placeholder="YouTube Link">
+
+<button onclick="submit()">Submit</button>
+</div>
+
+<script>
+function submit(){
+  const records = JSON.parse(localStorage.getItem("records")) || [];
+
+  records.push({
+    nick: nick.value,
+    level: level.value,
+    yt: yt.value,
+    approved: false
+  });
+
+  localStorage.setItem("records", JSON.stringify(records));
+  alert("Record submitted!");
+}
+</script>
+
+</body>
+</html>
