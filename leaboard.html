@@ -13,85 +13,121 @@ body{
   color:white;
 }
 
+/* ÜST MENÜ */
+.menu{
+  position:fixed;
+  top:15px;
+  right:20px;
+  display:flex;
+  gap:18px;
+}
+.menu a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+  padding:6px 12px;
+  border-radius:8px;
+}
+.menu a:hover{
+  background:rgba(30,144,255,0.25);
+}
+
+/* BAŞLIK */
 h1{
   text-align:center;
-  margin:40px 0;
+  margin-top:80px;
+  font-size:42px;
   background:linear-gradient(90deg,#1e90ff,#ff2b2b);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
+/* LİSTE */
 .container{
   max-width:800px;
-  margin:auto;
-  padding:20px;
+  margin:40px auto;
+  padding:0 16px;
 }
 
 .card{
-  background:rgba(0,0,0,0.75);
+  background:rgba(0,0,0,0.65);
+  border:2px solid rgba(255,255,255,0.15);
+  border-radius:14px;
   padding:14px;
-  border-radius:12px;
   margin-bottom:14px;
-  border-left:6px solid #1e90ff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.card:nth-child(1){ border-left-color: gold; }
-.card:nth-child(2){ border-left-color: silver; }
-.card:nth-child(3){ border-left-color: #cd7f32; }
+.card a{
+  color:#1e90ff;
+  text-decoration:none;
+  font-weight:bold;
+}
 
-@media(max-width:600px){
-  h1{font-size:32px}
+.rank{
+  font-size:18px;
+  font-weight:bold;
 }
 </style>
 </head>
 
 <body>
 
+<!-- MENÜ -->
+<div class="menu">
+  <a href="index.html">Demon List</a>
+  <a href="submit.html">Submit</a>
+</div>
+
 <h1>Leaderboard</h1>
+
 <div class="container" id="board"></div>
 
 <script>
-function calculateScore(rank){
-  if(rank <= 40) return 150;      // Main
-  if(rank <= 75) return 90;       // Extended
-  if(rank <= 100) return 40;      // Legacy
-  return 0;
-}
-
 const levels = JSON.parse(localStorage.getItem("levels")) || [];
 const records = JSON.parse(localStorage.getItem("records")) || [];
 
-/* 🔴 EKSİK OLAN SATIR BUYDU */
-const board = document.getElementById("board");
+/* PUAN HESABI */
+function score(rank){
+  if(rank <= 40) return 150;
+  if(rank <= 75) return 90;
+  if(rank <= 100) return 40;
+  return 0;
+}
 
+/* OYUNCU PUANLARI */
 const players = {};
 
-// sadece ONAYLI recordlar
-records.filter(r => r.approved).forEach(r => {
-  const level = levels.find(l => l.name === r.level);
-  if(!level) return;
+records.forEach(r=>{
+  if(!r.approved) return;
 
-  const score = level.customScore ?? calculateScore(level.rank);
+  const lvl = levels.find(l=>l.name === r.level);
+  if(!lvl) return;
 
-  if(!players[r.nick]){
-    players[r.nick] = 0;
-  }
-  players[r.nick] += score;
+  if(!players[r.nick]) players[r.nick] = 0;
+  players[r.nick] += score(lvl.rank);
 });
 
-// sıralama
+/* SIRALAMA */
 const sorted = Object.entries(players)
   .sort((a,b)=>b[1]-a[1]);
 
+const board = document.getElementById("board");
+
 if(sorted.length === 0){
-  board.innerHTML = "<p style='text-align:center'>No scores yet.</p>";
+  board.innerHTML = "<p style='text-align:center'>No records yet.</p>";
 }
 
 sorted.forEach((p,i)=>{
   board.innerHTML += `
     <div class="card">
-      <b>#${i+1} ${p[0]}</b><br>
-      Total Score: ${p[1]}
+      <div class="rank">#${i+1}</div>
+      <div>
+        <a href="profile.html?player=${p[0]}">${p[0]}</a>
+      </div>
+      <div>${p[1]} pts</div>
     </div>
   `;
 });
