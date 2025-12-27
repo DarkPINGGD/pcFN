@@ -2,41 +2,49 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Submit a Record</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit Record – GD Holland List</title>
 
 <style>
 body{
   margin:0;
-  font-family:Arial, Helvetica, sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
   background:linear-gradient(135deg,#081a3a,#3a0a0a);
   color:white;
 }
 
-/* ÜST MENÜ */
+/* MENU */
 .menu{
   position:fixed;
-  top:15px;
-  right:20px;
+  top:20px;
+  right:30px;
   display:flex;
-  gap:18px;
+  gap:20px;
+  z-index:9999;
 }
+
 .menu a{
   color:white;
   text-decoration:none;
+  font-size:18px;
   font-weight:bold;
-  padding:6px 14px;
-  border-radius:8px;
-}
-.menu a:hover{
-  background:rgba(30,144,255,0.25);
+  padding:8px 14px;
+  border-radius:10px;
 }
 
-/* BAŞLIK */
-h1{
+.menu a:hover{
+  background:rgba(30,144,255,0.2);
+  border:1px solid #1e90ff;
+}
+
+/* HEADER */
+.header{
   text-align:center;
-  margin-top:90px;
-  font-size:44px;
+  margin-top:80px;
+}
+
+.header h1{
+  font-size:48px;
+  margin:0;
   background:linear-gradient(90deg,#1e90ff,#ff2b2b);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
@@ -44,92 +52,99 @@ h1{
 
 /* FORM */
 .form-box{
-  max-width:600px;
-  margin:40px auto;
+  max-width:520px;
+  margin:50px auto;
   background:rgba(0,0,0,0.7);
-  border:2px solid rgba(255,255,255,0.15);
-  border-radius:18px;
-  padding:24px;
-  box-shadow:0 0 25px rgba(0,0,0,0.5);
+  border:2px solid #1e90ff;
+  border-radius:16px;
+  padding:25px;
+  box-shadow:0 0 25px rgba(30,144,255,0.3);
 }
 
 label{
-  display:block;
-  margin-top:16px;
-  font-size:18px;
   font-weight:bold;
+  display:block;
+  margin-top:15px;
 }
 
 input{
   width:100%;
-  margin-top:6px;
   padding:12px;
-  font-size:17px;
+  margin-top:6px;
   border-radius:10px;
   border:none;
-  outline:none;
-}
-
-input::placeholder{
-  color:#999;
+  font-size:16px;
+  background:#111;
+  color:white;
+  border:1px solid #333;
 }
 
 button{
   width:100%;
-  margin-top:26px;
+  margin-top:25px;
   padding:14px;
-  font-size:20px;
+  font-size:18px;
   font-weight:bold;
+  border-radius:12px;
   border:none;
-  border-radius:14px;
-  background:linear-gradient(90deg,#1e90ff,#ff2b2b);
-  color:white;
   cursor:pointer;
+  background:#1e90ff;
+  color:white;
 }
 
 button:hover{
-  opacity:0.9;
+  background:#0b75d1;
 }
 
 .note{
-  margin-top:14px;
-  font-size:14px;
-  color:#ccc;
   text-align:center;
+  margin-top:12px;
+  font-size:14px;
+  opacity:0.8;
+}
+
+@media(max-width:600px){
+  .form-box{margin:30px 15px}
 }
 </style>
 </head>
 
 <body>
 
-<!-- MENÜ -->
+<!-- MENU -->
 <div class="menu">
   <a href="index.html">Demon List</a>
+  <a href="submit.html">Submit</a>
   <a href="leaderboard.html">Leaderboard</a>
+  <a href="admin.html">Admin</a>
 </div>
 
-<h1>Submit a Record</h1>
+<!-- HEADER -->
+<div class="header">
+  <h1>Submit Record</h1>
+</div>
 
+<!-- FORM -->
 <div class="form-box">
   <label>Level Name (must be exact)</label>
-  <input id="level" placeholder="Example: Bloodlust">
+  <input id="level" placeholder="Acheron">
 
-  <label>Your Nickname</label>
-  <input id="nick" placeholder="Your in-game nickname">
+  <label>Your Nick</label>
+  <input id="nick" placeholder="PlayerName">
 
-  <label>Percentage (%)</label>
-  <input id="percent" type="number" placeholder="Example: 100">
+  <label>Percent (%)</label>
+  <input id="percent" type="number" min="0" max="100">
 
-  <label>YouTube Video Link</label>
+  <label>YouTube Link</label>
   <input id="yt" placeholder="https://youtube.com/...">
 
   <label>Raw Footage Link</label>
-  <input id="raw" placeholder="Drive / Mediafire / Mega link">
+  <input id="raw" placeholder="Google Drive / Mediafire / etc">
 
   <button onclick="submitRecord()">Submit Record</button>
 
   <div class="note">
-    Records must be approved by admins before appearing on the leaderboard.
+    Record will be reviewed by the admin before appearing on the list.
   </div>
 </div>
 
@@ -137,30 +152,31 @@ button:hover{
 function submitRecord(){
   const level = document.getElementById("level").value.trim();
   const nick = document.getElementById("nick").value.trim();
-  const percent = document.getElementById("percent").value.trim();
+  const percent = document.getElementById("percent").value;
   const yt = document.getElementById("yt").value.trim();
   const raw = document.getElementById("raw").value.trim();
 
   if(!level || !nick || !percent || !yt || !raw){
-    alert("Please fill in ALL fields.");
+    alert("Please fill in all fields.");
     return;
   }
 
   const records = JSON.parse(localStorage.getItem("records")) || [];
 
   records.push({
-    level: level,
-    nick: nick,
-    percent: percent,
-    yt: yt,
-    raw: raw,
+    id: Date.now(),
+    level,
+    nick,
+    percent,
+    yt,
+    raw,
     approved: false
   });
 
   localStorage.setItem("records", JSON.stringify(records));
 
-  alert("Record submitted! Await admin approval.");
-  location.reload();
+  alert("Record submitted successfully!");
+  document.querySelectorAll("input").forEach(i=>i.value="");
 }
 </script>
 
