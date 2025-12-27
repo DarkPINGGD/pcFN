@@ -12,7 +12,6 @@ body{
   color:white;
 }
 
-/* MENU */
 .menu{
   position:fixed;
   top:20px;
@@ -36,7 +35,6 @@ body{
   border:1px solid #1e90ff;
 }
 
-/* HEADER */
 .header{
   text-align:center;
   margin-top:80px;
@@ -50,7 +48,6 @@ body{
   -webkit-text-fill-color:transparent;
 }
 
-/* TABLE */
 .container{
   max-width:1000px;
   margin:50px auto;
@@ -68,32 +65,20 @@ table{
 th,td{
   padding:12px;
   border-bottom:1px solid rgba(255,255,255,0.15);
-  text-align:left;
 }
 
 th{
   color:#1e90ff;
-  font-size:18px;
 }
 
-tr:hover{
-  background:rgba(255,255,255,0.05);
-}
-
-/* ROLE COLORS */
 .role-champion{color:#ffd700;font-weight:bold}
 .role-elite{color:#c0c0c0;font-weight:bold}
 .role-top{color:#1e90ff;font-weight:bold}
-
-@media(max-width:700px){
-  th,td{font-size:14px}
-}
 </style>
 </head>
 
 <body>
 
-<!-- MENU -->
 <div class="menu">
   <a href="index.html">Demon List</a>
   <a href="submit.html">Submit</a>
@@ -101,12 +86,10 @@ tr:hover{
   <a href="admin.html">Admin</a>
 </div>
 
-<!-- HEADER -->
 <div class="header">
   <h1>Leaderboard</h1>
 </div>
 
-<!-- TABLE -->
 <div class="container">
   <table id="board">
     <tr>
@@ -121,11 +104,22 @@ tr:hover{
 </div>
 
 <script>
-const levels = JSON.parse(localStorage.getItem("levels")) || [];
-const records = JSON.parse(localStorage.getItem("records")) || [];
+let levels = [];
+let records = [];
 
-/* PUAN SİSTEMİ */
+try{
+  levels = JSON.parse(localStorage.getItem("levels")) || [];
+  records = JSON.parse(localStorage.getItem("records")) || [];
+}catch(e){
+  levels = [];
+  records = [];
+}
+
+if(!Array.isArray(levels)) levels = [];
+if(!Array.isArray(records)) records = [];
+
 function calculateScore(rank){
+  rank = Number(rank);
   if(rank <= 10) return 150;
   if(rank <= 20) return 120;
   if(rank <= 40) return 100;
@@ -134,48 +128,47 @@ function calculateScore(rank){
   return 0;
 }
 
-/* SADECE ONAYLI RECORD */
-const approved = records.filter(r => r.approved);
 const players = {};
 
-/* OYUNCUYA GÖRE EN İYİ RECORD */
-approved.forEach(r=>{
-  const lvl = levels.find(l=>l.name === r.level);
-  if(!lvl) return;
+records.forEach(r=>{
+  if(!r || !r.approved || !r.nick || !r.level) return;
+
+  const lvl = levels.find(l => l && l.name === r.level);
+  if(!lvl || !lvl.rank) return;
 
   const score = calculateScore(lvl.rank);
 
   if(!players[r.nick] || players[r.nick].score < score){
     players[r.nick] = {
-      nick: r.nick,
-      level: r.level,
-      rank: lvl.rank,
-      score: score
+      nick:r.nick,
+      level:r.level,
+      rank:lvl.rank,
+      score:score
     };
   }
 });
 
-/* SIRALAMA */
 const sorted = Object.values(players)
   .sort((a,b)=>b.score - a.score);
 
 const table = document.getElementById("board");
 
-/* TABLOYA YAZ */
-sorted.forEach((p,i)=>{
-  let role = "";
-  let roleClass = "";
+if(sorted.length === 0){
+  table.innerHTML += `
+    <tr>
+      <td colspan="6" style="text-align:center;opacity:.6">
+        No approved records yet
+      </td>
+    </tr>
+  `;
+}
 
-  if(i === 0){
-    role = "Champion 🥇";
-    roleClass = "role-champion";
-  }else if(i <= 2){
-    role = "Elite 🥈";
-    roleClass = "role-elite";
-  }else if(i <= 9){
-    role = "Top Player";
-    roleClass = "role-top";
-  }
+sorted.forEach((p,i)=>{
+  let role="", cls="";
+
+  if(i===0){role="Champion 🥇";cls="role-champion";}
+  else if(i<=2){role="Elite 🥈";cls="role-elite";}
+  else if(i<=9){role="Top Player";cls="role-top";}
 
   table.innerHTML += `
     <tr>
@@ -184,7 +177,7 @@ sorted.forEach((p,i)=>{
       <td>${p.level}</td>
       <td>#${p.rank}</td>
       <td>${p.score}</td>
-      <td class="${roleClass}">${role}</td>
+      <td class="${cls}">${role}</td>
     </tr>
   `;
 });
