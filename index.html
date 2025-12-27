@@ -17,17 +17,23 @@ body{
   position:fixed;
   top:15px;
   left:15px;
-  background:rgba(0,0,0,0.75);
+  background:rgba(0,0,0,0.8);
   border:2px solid #1e90ff;
-  padding:12px 16px;
+  padding:14px 18px;
   border-radius:12px;
   font-weight:bold;
   font-size:15px;
   z-index:9999;
-  line-height:1.4;
 }
 
-/* MENU */
+.list-info hr{
+  border:none;
+  height:1px;
+  background:rgba(255,255,255,0.3);
+  margin:6px 0;
+}
+
+/* MENÜ */
 .menu{
   position:fixed;
   top:20px;
@@ -44,17 +50,18 @@ body{
   font-weight:bold;
   padding:8px 14px;
   border-radius:10px;
+  border:1px solid rgba(255,255,255,0.3);
 }
 
 .menu a:hover{
-  background:rgba(30,144,255,0.2);
-  border:1px solid #1e90ff;
+  background:rgba(30,144,255,0.25);
+  border-color:#1e90ff;
 }
 
 /* HEADER */
 .header{
   text-align:center;
-  margin-top:80px;
+  margin-top:90px;
 }
 
 .header h1{
@@ -65,71 +72,46 @@ body{
   -webkit-text-fill-color:transparent;
 }
 
-/* CONTAINER */
+/* LIST */
 .container{
-  max-width:1000px;
+  max-width:900px;
   margin:60px auto;
-  padding:0 15px;
+  padding:0 20px;
 }
 
-/* CARD */
 .card{
   background:rgba(0,0,0,0.65);
-  border-radius:16px;
+  border-left:6px solid #ff2b2b;
   padding:18px;
-  margin-bottom:22px;
-  box-shadow:0 0 20px rgba(0,0,0,0.4);
-  position:relative;
-  overflow:hidden;
+  border-radius:14px;
+  margin-bottom:20px;
 }
 
-/* RANK BAR */
-.rank-bar{
-  height:8px;
-  border-radius:6px;
-  margin-bottom:12px;
-}
-
-/* TEXT */
 .card h2{
-  margin:0 0 8px 0;
+  margin:0 0 10px 0;
   color:#1e90ff;
-  font-size:26px;
 }
 
-.card p{
-  margin:4px 0;
-  font-size:16px;
-}
-
-/* FLAG */
-.flag{
-  position:absolute;
-  top:14px;
-  right:14px;
-  font-size:22px;
-}
-
-/* MOBILE */
 @media(max-width:700px){
-  .header h1{font-size:40px}
   .menu{right:10px;gap:10px}
+  .menu a{font-size:14px}
+  .header h1{font-size:36px}
 }
 </style>
 </head>
 
 <body>
 
-<!-- SOL ÜST -->
 <div class="list-info">
-  Ver. : v1.0<br>
-  ─────────────<br>
-  Main List: 1–40<br>
-  Extended: 40–75<br>
-  Legacy: 75–100
+  Ver. : v1.0
+  <hr>
+  Main List: 1–40
+  <hr>
+  Extended List: 40–75
+  <hr>
+  Legacy List: 75–100
 </div>
 
-<!-- MENU -->
 <div class="menu">
   <a href="index.html">Demon List</a>
   <a href="submit.html">Submit</a>
@@ -137,60 +119,28 @@ body{
   <a href="admin.html">Admin</a>
 </div>
 
-<!-- HEADER -->
 <div class="header">
   <h1>Geometry Dash Holland List</h1>
 </div>
 
-<!-- LIST -->
 <div class="container" id="list"></div>
 
 <script>
 const levels = JSON.parse(localStorage.getItem("levels")) || [];
 const records = JSON.parse(localStorage.getItem("records")) || [];
-
 const list = document.getElementById("list");
-
-/* DIFFICULTY BAR COLOR */
-function barColor(rank){
-  if(rank <= 10) return "#ff2b2b";
-  if(rank <= 20) return "#ff6b2b";
-  if(rank <= 40) return "#ffb82b";
-  if(rank <= 75) return "#2bff6b";
-  return "#1e90ff";
-}
 
 if(levels.length === 0){
   list.innerHTML = "<p style='text-align:center'>No levels yet.</p>";
 }
 
-levels
-.sort((a,b)=>a.rank-b.rank)
-.forEach(l=>{
-  const approved = records
-    .filter(r=>r.level===l.name && r.approved);
-
-  const firstVictor = approved.length > 0 ? approved[0] : null;
-
+levels.sort((a,b)=>a.rank-b.rank).forEach(l=>{
+  const first = records.find(r=>r.level===l.name && r.approved);
   list.innerHTML += `
     <div class="card">
-      <div class="flag">🇳🇱</div>
-
-      <div class="rank-bar" style="background:${barColor(l.rank)}"></div>
-
       <h2>#${l.rank} ${l.name}</h2>
-
       <p><b>Creator:</b> ${l.creator}</p>
-
-      <p><b>First Victor:</b>
-        ${
-          firstVictor
-            ? `<a href="${firstVictor.yt}" target="_blank" style="color:#1e90ff">
-                 ${firstVictor.nick}
-               </a>`
-            : "None"
-        }
-      </p>
+      <p><b>First Victor:</b> ${first ? first.nick : "None"}</p>
     </div>
   `;
 });
@@ -198,3 +148,4 @@ levels
 
 </body>
 </html>
+
