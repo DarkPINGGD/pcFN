@@ -1,59 +1,228 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin Login</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel – GD Holland List</title>
 
 <style>
 body{
   margin:0;
-  font-family:Arial;
+  font-family:Arial,Helvetica,sans-serif;
   background:linear-gradient(135deg,#081a3a,#3a0a0a);
   color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
 }
+
+h1,h2{margin:10px 0}
+
+.container{
+  max-width:1100px;
+  margin:40px auto;
+  padding:20px;
+}
+
 .box{
   background:rgba(0,0,0,0.7);
-  padding:30px;
+  border:2px solid #1e90ff;
   border-radius:14px;
-  width:300px;
+  padding:20px;
+  margin-bottom:30px;
 }
+
 input,button{
   width:100%;
   padding:10px;
-  margin-top:10px;
-}
-button{
-  background:linear-gradient(90deg,#1e90ff,#ff2b2b);
+  margin:6px 0;
+  border-radius:8px;
   border:none;
+  font-size:16px;
+}
+
+input{
+  background:#111;
+  color:white;
+  border:1px solid #333;
+}
+
+button{
+  background:#1e90ff;
+  color:white;
   font-weight:bold;
   cursor:pointer;
+}
+
+button.red{
+  background:#ff2b2b;
+}
+
+button.small{
+  width:auto;
+  padding:6px 12px;
+  font-size:14px;
+  margin-left:6px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  border-bottom:1px solid rgba(255,255,255,0.15);
+  padding:8px;
+  text-align:left;
+}
+
+th{color:#1e90ff}
+
+.hidden{display:none}
+
+@media(max-width:700px){
+  .container{padding:10px}
 }
 </style>
 </head>
 
 <body>
 
-<div class="box">
-  <h2>Admin Login</h2>
-  <input id="pass" type="password" placeholder="Password">
+<div class="container">
+
+<!-- LOGIN -->
+<div id="loginBox" class="box">
+  <h1>Admin Login</h1>
+  <input type="password" id="password" placeholder="Admin Password">
   <button onclick="login()">Login</button>
 </div>
 
-<script>
-const PASSWORD = "admin123"; // BURAYI DEĞİŞTİR
+<!-- PANEL -->
+<div id="panel" class="hidden">
 
+<!-- LEVEL EKLE -->
+<div class="box">
+  <h2>Add Level</h2>
+  <input id="lvlName" placeholder="Level Name">
+  <input id="lvlCreator" placeholder="Creator">
+  <input id="lvlRank" type="number" placeholder="Rank">
+  <button onclick="addLevel()">Add Level</button>
+</div>
+
+<!-- LEVEL LİSTESİ -->
+<div class="box">
+  <h2>Levels</h2>
+  <table id="levelTable"></table>
+</div>
+
+<!-- RECORD LİSTESİ -->
+<div class="box">
+  <h2>Records</h2>
+  <table id="recordTable"></table>
+</div>
+
+</div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = "1234";
+
+/* LOGIN */
 function login(){
-  if(pass.value === PASSWORD){
-    localStorage.setItem("adminLogged","true");
-    location.href="admin-panel.html";
+  if(document.getElementById("password").value === ADMIN_PASSWORD){
+    document.getElementById("loginBox").style.display="none";
+    document.getElementById("panel").classList.remove("hidden");
+    render();
   }else{
     alert("Wrong password");
   }
+}
+
+/* STORAGE */
+let levels = JSON.parse(localStorage.getItem("levels")) || [];
+let records = JSON.parse(localStorage.getItem("records")) || [];
+
+function save(){
+  localStorage.setItem("levels",JSON.stringify(levels));
+  localStorage.setItem("records",JSON.stringify(records));
+}
+
+/* LEVEL */
+function addLevel(){
+  levels.push({
+    id:Date.now(),
+    name:document.getElementById("lvlName").value,
+    creator:document.getElementById("lvlCreator").value,
+    rank:Number(document.getElementById("lvlRank").value)
+  });
+  save();
+  render();
+}
+
+function deleteLevel(id){
+  levels = levels.filter(l=>l.id!==id);
+  save();
+  render();
+}
+
+/* RECORD */
+function approveRecord(id){
+  const r = records.find(x=>x.id===id);
+  if(r) r.approved=true;
+  save();
+  render();
+}
+
+function deleteRecord(id){
+  records = records.filter(r=>r.id!==id);
+  save();
+  render();
+}
+
+/* RENDER */
+function render(){
+  /* LEVEL TABLE */
+  const lt = document.getElementById("levelTable");
+  lt.innerHTML = `
+    <tr>
+      <th>Rank</th>
+      <th>Name</th>
+      <th>Creator</th>
+      <th>Action</th>
+    </tr>`;
+  levels.sort((a,b)=>a.rank-b.rank).forEach(l=>{
+    lt.innerHTML += `
+      <tr>
+        <td>${l.rank}</td>
+        <td>${l.name}</td>
+        <td>${l.creator}</td>
+        <td>
+          <button class="small red" onclick="deleteLevel(${l.id})">Delete</button>
+        </td>
+      </tr>`;
+  });
+
+  /* RECORD TABLE */
+  const rt = document.getElementById("recordTable");
+  rt.innerHTML = `
+    <tr>
+      <th>Level</th>
+      <th>Nick</th>
+      <th>%</th>
+      <th>YouTube</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>`;
+  records.forEach(r=>{
+    rt.innerHTML += `
+      <tr>
+        <td>${r.level}</td>
+        <td>${r.nick}</td>
+        <td>${r.percent}%</td>
+        <td><a href="${r.yt}" target="_blank">Link</a></td>
+        <td>${r.approved ? "Approved" : "Pending"}</td>
+        <td>
+          ${!r.approved ? `<button class="small" onclick="approveRecord(${r.id})">Approve</button>` : ""}
+          <button class="small red" onclick="deleteRecord(${r.id})">Delete</button>
+        </td>
+      </tr>`;
+  });
 }
 </script>
 
