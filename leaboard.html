@@ -2,133 +2,165 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Leaderboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard – GD Holland List</title>
 
 <style>
 body{
   margin:0;
-  font-family:Arial, Helvetica, sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
   background:linear-gradient(135deg,#081a3a,#3a0a0a);
   color:white;
 }
 
-/* ÜST MENÜ */
-.menu{
-  position:fixed;
-  top:15px;
-  right:20px;
-  display:flex;
-  gap:18px;
-}
-.menu a{
-  color:white;
-  text-decoration:none;
-  font-weight:bold;
-  padding:6px 12px;
-  border-radius:8px;
-}
-.menu a:hover{
-  background:rgba(30,144,255,0.25);
+.header{
+  text-align:center;
+  margin-top:70px;
 }
 
-/* BAŞLIK */
-h1{
-  text-align:center;
-  margin-top:80px;
-  font-size:42px;
+.header h1{
+  font-size:46px;
+  margin:0;
   background:linear-gradient(90deg,#1e90ff,#ff2b2b);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
-/* LİSTE */
-.container{
-  max-width:800px;
-  margin:40px auto;
-  padding:0 16px;
-}
-
-.card{
-  background:rgba(0,0,0,0.65);
-  border:2px solid rgba(255,255,255,0.15);
-  border-radius:14px;
-  padding:14px;
-  margin-bottom:14px;
+.menu{
+  position:fixed;
+  top:20px;
+  right:30px;
   display:flex;
-  justify-content:space-between;
-  align-items:center;
+  gap:20px;
+  z-index:9999;
 }
 
-.card a{
-  color:#1e90ff;
+.menu a{
+  color:white;
   text-decoration:none;
-  font-weight:bold;
-}
-
-.rank{
   font-size:18px;
   font-weight:bold;
+  padding:8px 14px;
+  border-radius:10px;
+}
+
+.menu a:hover{
+  background:rgba(30,144,255,0.2);
+  border:1px solid #1e90ff;
+}
+
+.container{
+  max-width:900px;
+  margin:50px auto;
+  padding:0 15px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:rgba(0,0,0,0.65);
+  border-radius:14px;
+  overflow:hidden;
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid rgba(255,255,255,0.15);
+  text-align:left;
+}
+
+th{
+  color:#1e90ff;
+  font-size:18px;
+}
+
+tr:hover{
+  background:rgba(255,255,255,0.05);
+}
+
+@media(max-width:700px){
+  th,td{font-size:14px}
 }
 </style>
 </head>
 
 <body>
 
-<!-- MENÜ -->
+<!-- MENU -->
 <div class="menu">
   <a href="index.html">Demon List</a>
   <a href="submit.html">Submit</a>
+  <a href="leaderboard.html">Leaderboard</a>
+  <a href="admin.html">Admin</a>
 </div>
 
-<h1>Leaderboard</h1>
+<!-- HEADER -->
+<div class="header">
+  <h1>Leaderboard</h1>
+</div>
 
-<div class="container" id="board"></div>
+<!-- TABLE -->
+<div class="container">
+  <table id="board">
+    <tr>
+      <th>#</th>
+      <th>Player</th>
+      <th>Best Level</th>
+      <th>Rank</th>
+      <th>Score</th>
+    </tr>
+  </table>
+</div>
 
 <script>
 const levels = JSON.parse(localStorage.getItem("levels")) || [];
 const records = JSON.parse(localStorage.getItem("records")) || [];
 
-/* PUAN HESABI */
-function score(rank){
-  if(rank <= 40) return 150;
-  if(rank <= 75) return 90;
+function calculateScore(rank){
+  if(rank <= 10) return 150;
+  if(rank <= 20) return 120;
+  if(rank <= 40) return 100;
+  if(rank <= 75) return 70;
   if(rank <= 100) return 40;
   return 0;
 }
 
-/* OYUNCU PUANLARI */
+// SADECE ONAYLANMIŞ RECORDLAR
+const approved = records.filter(r => r.approved);
+
+// OYUNCUYA GÖRE EN İYİ RECORD
 const players = {};
 
-records.forEach(r=>{
-  if(!r.approved) return;
-
+approved.forEach(r=>{
   const lvl = levels.find(l=>l.name === r.level);
   if(!lvl) return;
 
-  if(!players[r.nick]) players[r.nick] = 0;
-  players[r.nick] += score(lvl.rank);
+  const score = calculateScore(lvl.rank);
+
+  if(!players[r.nick] || players[r.nick].score < score){
+    players[r.nick] = {
+      nick: r.nick,
+      level: r.level,
+      rank: lvl.rank,
+      score: score
+    };
+  }
 });
 
-/* SIRALAMA */
-const sorted = Object.entries(players)
-  .sort((a,b)=>b[1]-a[1]);
+// ARRAY + SIRALAMA
+const sorted = Object.values(players)
+  .sort((a,b)=>b.score - a.score);
 
-const board = document.getElementById("board");
-
-if(sorted.length === 0){
-  board.innerHTML = "<p style='text-align:center'>No records yet.</p>";
-}
+const table = document.getElementById("board");
 
 sorted.forEach((p,i)=>{
-  board.innerHTML += `
-    <div class="card">
-      <div class="rank">#${i+1}</div>
-      <div>
-        <a href="profile.html?player=${p[0]}">${p[0]}</a>
-      </div>
-      <div>${p[1]} pts</div>
-    </div>
+  table.innerHTML += `
+    <tr>
+      <td>${i+1}</td>
+      <td>${p.nick}</td>
+      <td>${p.level}</td>
+      <td>#${p.rank}</td>
+      <td>${p.score}</td>
+    </tr>
   `;
 });
 </script>
