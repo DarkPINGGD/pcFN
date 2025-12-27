@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Leaderboard</title>
@@ -8,22 +8,40 @@
 <style>
 body{
   margin:0;
-  font-family:Arial;
+  font-family:Arial, Helvetica, sans-serif;
   background:linear-gradient(135deg,#081a3a,#3a0a0a);
   color:white;
 }
-h1{text-align:center;margin:30px 0}
-.container{max-width:800px;margin:auto;padding:20px}
+
+h1{
+  text-align:center;
+  margin:40px 0;
+  background:linear-gradient(90deg,#1e90ff,#ff2b2b);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.container{
+  max-width:800px;
+  margin:auto;
+  padding:20px;
+}
+
 .card{
-  background:rgba(0,0,0,0.7);
+  background:rgba(0,0,0,0.75);
   padding:14px;
   border-radius:12px;
-  margin-bottom:12px;
+  margin-bottom:14px;
   border-left:6px solid #1e90ff;
 }
-.card:nth-child(1){border-left-color:gold}
-.card:nth-child(2){border-left-color:silver}
-.card:nth-child(3){border-left-color:#cd7f32}
+
+.card:nth-child(1){ border-left-color: gold; }
+.card:nth-child(2){ border-left-color: silver; }
+.card:nth-child(3){ border-left-color: #cd7f32; }
+
+@media(max-width:600px){
+  h1{font-size:32px}
+}
 </style>
 </head>
 
@@ -34,27 +52,43 @@ h1{text-align:center;margin:30px 0}
 
 <script>
 function calculateScore(rank){
-  if(rank <= 40) return 150;
-  if(rank <= 75) return 90;
-  if(rank <= 100) return 40;
+  if(rank <= 40) return 150;      // Main
+  if(rank <= 75) return 90;       // Extended
+  if(rank <= 100) return 40;      // Legacy
   return 0;
 }
 
 const levels = JSON.parse(localStorage.getItem("levels")) || [];
 const records = JSON.parse(localStorage.getItem("records")) || [];
+
+/* 🔴 EKSİK OLAN SATIR BUYDU */
+const board = document.getElementById("board");
+
 const players = {};
 
-records.filter(r=>r.approved).forEach(r=>{
-  const level = levels.find(l=>l.name===r.level);
+// sadece ONAYLI recordlar
+records.filter(r => r.approved).forEach(r => {
+  const level = levels.find(l => l.name === r.level);
   if(!level) return;
+
   const score = level.customScore ?? calculateScore(level.rank);
-  players[r.nick]=(players[r.nick]||0)+score;
+
+  if(!players[r.nick]){
+    players[r.nick] = 0;
+  }
+  players[r.nick] += score;
 });
 
-Object.entries(players)
-.sort((a,b)=>b[1]-a[1])
-.forEach((p,i)=>{
-  board.innerHTML+=`
+// sıralama
+const sorted = Object.entries(players)
+  .sort((a,b)=>b[1]-a[1]);
+
+if(sorted.length === 0){
+  board.innerHTML = "<p style='text-align:center'>No scores yet.</p>";
+}
+
+sorted.forEach((p,i)=>{
+  board.innerHTML += `
     <div class="card">
       <b>#${i+1} ${p[0]}</b><br>
       Total Score: ${p[1]}
