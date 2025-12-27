@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Admin Login</title>
@@ -8,90 +8,51 @@
 <style>
 body{
   margin:0;
-  height:100vh;
+  font-family:Arial;
+  background:linear-gradient(135deg,#081a3a,#3a0a0a);
+  color:white;
   display:flex;
   justify-content:center;
   align-items:center;
-  background: linear-gradient(135deg,#081a3a,#3a0a0a);
-  font-family: Arial, Helvetica, sans-serif;
-  color:white;
+  height:100vh;
 }
-
-.login-box{
-  background: rgba(0,0,0,0.7);
+.box{
+  background:rgba(0,0,0,0.7);
   padding:30px;
   border-radius:14px;
-  width:90%;
-  max-width:360px;
-  box-shadow:0 0 25px rgba(0,0,0,0.6);
-  border:2px solid #1e90ff;
+  width:300px;
 }
-
-.login-box h1{
-  text-align:center;
-  margin-bottom:25px;
-  background: linear-gradient(90deg,#1e90ff,#ff2b2b);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-input{
+input,button{
   width:100%;
-  padding:12px;
-  margin-bottom:15px;
-  border-radius:8px;
-  border:none;
-  font-size:16px;
+  padding:10px;
+  margin-top:10px;
 }
-
 button{
-  width:100%;
-  padding:12px;
-  font-size:18px;
-  font-weight:bold;
+  background:linear-gradient(90deg,#1e90ff,#ff2b2b);
   border:none;
-  border-radius:8px;
+  font-weight:bold;
   cursor:pointer;
-  background: linear-gradient(90deg,#1e90ff,#ff2b2b);
-  color:white;
-}
-
-button:hover{
-  opacity:0.9;
-}
-
-.error{
-  text-align:center;
-  color:#ff4b4b;
-  margin-top:12px;
-  display:none;
 }
 </style>
 </head>
 
 <body>
 
-<div class="login-box">
-  <h1>Admin Login</h1>
-
-  <input type="password" id="password" placeholder="Admin Password">
+<div class="box">
+  <h2>Admin Login</h2>
+  <input id="pass" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
-
-  <div class="error" id="error">Wrong password!</div>
 </div>
 
 <script>
-const ADMIN_PASSWORD = "1234"; // 🔒 BURAYI DEĞİŞTİR
+const PASSWORD = "admin123"; // BURAYI DEĞİŞTİR
 
 function login(){
-  const input = document.getElementById("password").value;
-  const error = document.getElementById("error");
-
-  if(input === ADMIN_PASSWORD){
-    localStorage.setItem("adminLogged", "true");
-    window.location.href = "admin-panel.html";
+  if(pass.value === PASSWORD){
+    localStorage.setItem("adminLogged","true");
+    location.href="admin-panel.html";
   }else{
-    error.style.display = "block";
+    alert("Wrong password");
   }
 }
 </script>
