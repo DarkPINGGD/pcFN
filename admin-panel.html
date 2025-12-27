@@ -1,169 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Admin Panel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
 body{
   margin:0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: linear-gradient(135deg,#081a3a,#3a0a0a);
+  font-family:Arial;
+  background:linear-gradient(135deg,#081a3a,#3a0a0a);
   color:white;
 }
-
-header{
-  text-align:center;
-  padding:20px;
-  font-size:32px;
-  font-weight:bold;
-  background: linear-gradient(90deg,#1e90ff,#ff2b2b);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-}
-
+.container{max-width:900px;margin:auto;padding:20px}
 .section{
-  background: rgba(0,0,0,0.7);
+  background:rgba(0,0,0,0.7);
   padding:20px;
   border-radius:14px;
   margin-bottom:25px;
-  border-left:6px solid #1e90ff;
 }
-
-.section h2{
-  margin-top:0;
-  color:#1e90ff;
-}
-
-input{
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-  border-radius:8px;
-  border:none;
-}
-
-button{
-  padding:10px 14px;
-  margin-top:8px;
-  border:none;
-  border-radius:8px;
-  font-weight:bold;
-  cursor:pointer;
-  background: linear-gradient(90deg,#1e90ff,#ff2b2b);
-  color:white;
-}
-
-button.small{
-  font-size:14px;
-  padding:6px 10px;
-}
-
-.item{
-  border-bottom:1px solid rgba(255,255,255,0.2);
-  padding:10px 0;
-}
-
-.item:last-child{
-  border-bottom:none;
-}
+input{width:100%;padding:8px;margin:6px 0}
+button{padding:8px 12px;font-weight:bold}
 </style>
 </head>
 
 <body>
 
-<header>Admin Panel</header>
-
 <div class="container">
 
-<!-- LEVEL EKLE -->
 <div class="section">
-  <h2>Add Level</h2>
-  <input id="rank" placeholder="Rank">
-  <input id="name" placeholder="Level Name">
-  <input id="creator" placeholder="Creator">
-  <input id="firstVictor" placeholder="First Victor">
-  <button onclick="addLevel()">Add Level</button>
+<h2>Add Level</h2>
+<input id="rank" placeholder="Rank">
+<input id="name" placeholder="Level Name">
+<input id="creator" placeholder="Creator">
+<input id="firstVictor" placeholder="First Victor">
+<button onclick="addLevel()">Add</button>
 </div>
 
-<!-- LEVEL LİSTESİ -->
 <div class="section">
-  <h2>Levels</h2>
-  <div id="levels"></div>
-</div>
-
-<!-- RECORDLER -->
-<div class="section">
-  <h2>Records</h2>
-  <div id="records"></div>
+<h2>Levels</h2>
+<div id="levels"></div>
 </div>
 
 </div>
 
 <script>
-// LOGIN KONTROL
-if(localStorage.getItem("adminLogged") !== "true"){
-  window.location.href = "admin.html";
-}
-
-// DATA
 let levels = JSON.parse(localStorage.getItem("levels")) || [];
-let records = JSON.parse(localStorage.getItem("records")) || [];
 
-const levelsDiv = document.getElementById("levels");
-const recordsDiv = document.getElementById("records");
-
-// LEVEL EKLE
 function addLevel(){
   levels.push({
-    id: Date.now(),
-    rank: Number(rank.value),
-    name: name.value,
-    creator: creator.value,
-    firstVictor: firstVictor.value
+    id:Date.now(),
+    rank:Number(rank.value),
+    name:name.value,
+    creator:creator.value,
+    firstVictor:firstVictor.value,
+    customScore:null
   });
-
   save();
 }
 
-// LEVEL SİL
 function deleteLevel(id){
-  levels = levels.filter(l => l.id !== id);
+  levels=levels.filter(l=>l.id!==id);
   save();
 }
 
-// RECORD ONAY
-function approveRecord(id){
-  records.find(r => r.id === id).approved = true;
-  save();
-}
-
-// RECORD RED
-function rejectRecord(id){
-  records = records.filter(r => r.id !== id);
-  save();
-}
-
-// KAYDET & YENİLE
 function save(){
-  localStorage.setItem("levels", JSON.stringify(levels));
-  localStorage.setItem("records", JSON.stringify(records));
+  localStorage.setItem("levels",JSON.stringify(levels));
   render();
 }
 
-// EKRANA BAS
 function render(){
-  levelsDiv.innerHTML = "";
-  recordsDiv.innerHTML = "";
-
+  levelsDiv.innerHTML="";
   levels.sort((a,b)=>a.rank-b.rank).forEach(l=>{
-    levelsDiv.innerHTML += `
-      <div class="item">
-        <b>#${l.rank} ${l.name}<
+    levelsDiv.innerHTML+=`
+      <div>
+        <b>#${l.rank} ${l.name}</b><br>
+        First Victor: ${l.firstVictor}<br>
+        <button onclick="deleteLevel(${l.id})">Delete</button>
+      </div><hr>
+    `;
+  });
+}
+render();
+</script>
+
+</body>
+</html>
