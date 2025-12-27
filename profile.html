@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Player Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  background:linear-gradient(135deg,#081a3a,#3a0a0a);
+  color:white;
+  font-family:Arial;
+}
+.container{
+  max-width:800px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:rgba(0,0,0,0.7);
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1 id="name"></h1>
+  <div id="records"></div>
+</div>
+
+<script>
+function calculateScore(rank){
+  if(rank<=40) return 150;
+  if(rank<=75) return 90;
+  if(rank<=100) return 40;
+  return 0;
+}
+
+const params = new URLSearchParams(location.search);
+const nick = params.get("player");
+
+name.innerText = nick;
+
+const levels = JSON.parse(localStorage.getItem("levels"))||[];
+const records = JSON.parse(localStorage.getItem("records"))||[];
+
+records.filter(r=>r.nick===nick && r.approved).forEach(r=>{
+  const lvl = levels.find(l=>l.name===r.level);
+  if(!lvl) return;
+
+  recordsDiv.innerHTML += `
+    <div class="card">
+      <b>${r.level}</b><br>
+      Rank: ${lvl.rank}<br>
+      Score: ${calculateScore(lvl.rank)}
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>
