@@ -18,21 +18,12 @@ body{
   right:30px;
   display:flex;
   gap:20px;
-  z-index:9999;
 }
 
 .menu a{
   color:white;
   text-decoration:none;
-  font-size:18px;
   font-weight:bold;
-  padding:8px 14px;
-  border-radius:10px;
-}
-
-.menu a:hover{
-  background:rgba(30,144,255,0.2);
-  border:1px solid #1e90ff;
 }
 
 .header{
@@ -40,40 +31,23 @@ body{
   margin-top:80px;
 }
 
-.header h1{
-  font-size:46px;
-  margin:0;
-  background:linear-gradient(90deg,#1e90ff,#ff2b2b);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
 .container{
-  max-width:1000px;
-  margin:50px auto;
-  padding:0 15px;
+  max-width:900px;
+  margin:40px auto;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
   background:rgba(0,0,0,0.65);
-  border-radius:16px;
-  overflow:hidden;
 }
 
 th,td{
   padding:12px;
-  border-bottom:1px solid rgba(255,255,255,0.15);
+  border-bottom:1px solid rgba(255,255,255,0.2);
 }
 
-th{
-  color:#1e90ff;
-}
-
-.role-champion{color:#ffd700;font-weight:bold}
-.role-elite{color:#c0c0c0;font-weight:bold}
-.role-top{color:#1e90ff;font-weight:bold}
+th{color:#1e90ff}
 </style>
 </head>
 
@@ -91,93 +65,32 @@ th{
 </div>
 
 <div class="container">
-  <table id="board">
-    <tr>
-      <th>#</th>
-      <th>Player</th>
-      <th>Best Level</th>
-      <th>Rank</th>
-      <th>Score</th>
-      <th>Role</th>
-    </tr>
-  </table>
+<table id="board">
+<tr>
+  <th>#</th>
+  <th>Player</th>
+  <th>Score</th>
+</tr>
+</table>
 </div>
 
 <script>
-let levels = [];
-let records = [];
-
-try{
-  levels = JSON.parse(localStorage.getItem("levels")) || [];
-  records = JSON.parse(localStorage.getItem("records")) || [];
-}catch(e){
-  levels = [];
-  records = [];
-}
-
-if(!Array.isArray(levels)) levels = [];
-if(!Array.isArray(records)) records = [];
-
-function calculateScore(rank){
-  rank = Number(rank);
-  if(rank <= 10) return 150;
-  if(rank <= 20) return 120;
-  if(rank <= 40) return 100;
-  if(rank <= 75) return 70;
-  if(rank <= 100) return 40;
-  return 0;
-}
-
+const records = JSON.parse(localStorage.getItem("records")) || [];
 const players = {};
 
-records.forEach(r=>{
-  if(!r || !r.approved || !r.nick || !r.level) return;
-
-  const lvl = levels.find(l => l && l.name === r.level);
-  if(!lvl || !lvl.rank) return;
-
-  const score = calculateScore(lvl.rank);
-
-  if(!players[r.nick] || players[r.nick].score < score){
-    players[r.nick] = {
-      nick:r.nick,
-      level:r.level,
-      rank:lvl.rank,
-      score:score
-    };
-  }
+records.filter(r=>r.approved).forEach(r=>{
+  players[r.nick]=(players[r.nick]||0)+1;
 });
 
-const sorted = Object.values(players)
-  .sort((a,b)=>b.score - a.score);
-
-const table = document.getElementById("board");
-
-if(sorted.length === 0){
-  table.innerHTML += `
-    <tr>
-      <td colspan="6" style="text-align:center;opacity:.6">
-        No approved records yet
-      </td>
-    </tr>
-  `;
-}
+const sorted = Object.entries(players).sort((a,b)=>b[1]-a[1]);
+const table=document.getElementById("board");
 
 sorted.forEach((p,i)=>{
-  let role="", cls="";
-
-  if(i===0){role="Champion 🥇";cls="role-champion";}
-  else if(i<=2){role="Elite 🥈";cls="role-elite";}
-  else if(i<=9){role="Top Player";cls="role-top";}
-
-  table.innerHTML += `
+  table.innerHTML+=`
     <tr>
       <td>${i+1}</td>
-      <td>${p.nick}</td>
-      <td>${p.level}</td>
-      <td>#${p.rank}</td>
-      <td>${p.score}</td>
-      <td class="${cls}">${role}</td>
+      <td>${p[0]}</td>
+      <td>${p[1]}</td>
     </tr>
   `;
 });
