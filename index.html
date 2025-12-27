@@ -24,13 +24,15 @@ body{
   font-weight:bold;
   font-size:15px;
   z-index:9999;
+  box-shadow:0 0 18px rgba(30,144,255,0.5);
 }
 
-.list-info hr{
-  border:none;
-  height:1px;
-  background:rgba(255,255,255,0.3);
+.list-info .line{
+  height:2px;
+  width:100%;
+  background:linear-gradient(90deg,#1e90ff,#ff2b2b);
   margin:6px 0;
+  opacity:0.7;
 }
 
 /* MENÜ */
@@ -39,23 +41,34 @@ body{
   top:20px;
   right:30px;
   display:flex;
-  gap:20px;
+  gap:26px;
   z-index:9999;
 }
 
 .menu a{
+  position:relative;
   color:white;
   text-decoration:none;
   font-size:18px;
   font-weight:bold;
-  padding:8px 14px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.3);
+  padding-bottom:6px;
 }
 
-.menu a:hover{
-  background:rgba(30,144,255,0.25);
-  border-color:#1e90ff;
+/* NEON ALT ÇİZGİ */
+.menu a::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:0%;
+  height:2px;
+  background:linear-gradient(90deg,#1e90ff,#ff2b2b);
+  box-shadow:0 0 10px rgba(30,144,255,0.9);
+  transition:width 0.25s ease;
+}
+
+.menu a:hover::after{
+  width:100%;
 }
 
 /* HEADER */
@@ -70,6 +83,7 @@ body{
   background:linear-gradient(90deg,#1e90ff,#ff2b2b);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  text-shadow:0 0 18px rgba(30,144,255,0.35);
 }
 
 /* LIST */
@@ -85,6 +99,7 @@ body{
   padding:18px;
   border-radius:14px;
   margin-bottom:20px;
+  box-shadow:0 0 20px rgba(0,0,0,0.4);
 }
 
 .card h2{
@@ -93,7 +108,7 @@ body{
 }
 
 @media(max-width:700px){
-  .menu{right:10px;gap:10px}
+  .menu{right:10px;gap:14px}
   .menu a{font-size:14px}
   .header h1{font-size:36px}
 }
@@ -102,16 +117,18 @@ body{
 
 <body>
 
+<!-- SOL ÜST BİLGİ -->
 <div class="list-info">
   Ver. : v1.0
-  <hr>
+  <div class="line"></div>
   Main List: 1–40
-  <hr>
+  <div class="line"></div>
   Extended List: 40–75
-  <hr>
+  <div class="line"></div>
   Legacy List: 75–100
 </div>
 
+<!-- MENÜ -->
 <div class="menu">
   <a href="index.html">Demon List</a>
   <a href="submit.html">Submit</a>
@@ -119,10 +136,12 @@ body{
   <a href="admin.html">Admin</a>
 </div>
 
+<!-- BAŞLIK -->
 <div class="header">
   <h1>Geometry Dash Holland List</h1>
 </div>
 
+<!-- LİSTE -->
 <div class="container" id="list"></div>
 
 <script>
@@ -148,4 +167,3 @@ levels.sort((a,b)=>a.rank-b.rank).forEach(l=>{
 
 </body>
 </html>
-
