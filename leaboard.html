@@ -12,19 +12,7 @@ body{
   color:white;
 }
 
-.header{
-  text-align:center;
-  margin-top:70px;
-}
-
-.header h1{
-  font-size:46px;
-  margin:0;
-  background:linear-gradient(90deg,#1e90ff,#ff2b2b);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
+/* MENU */
 .menu{
   position:fixed;
   top:20px;
@@ -48,8 +36,23 @@ body{
   border:1px solid #1e90ff;
 }
 
+/* HEADER */
+.header{
+  text-align:center;
+  margin-top:80px;
+}
+
+.header h1{
+  font-size:46px;
+  margin:0;
+  background:linear-gradient(90deg,#1e90ff,#ff2b2b);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* TABLE */
 .container{
-  max-width:900px;
+  max-width:1000px;
   margin:50px auto;
   padding:0 15px;
 }
@@ -58,7 +61,7 @@ table{
   width:100%;
   border-collapse:collapse;
   background:rgba(0,0,0,0.65);
-  border-radius:14px;
+  border-radius:16px;
   overflow:hidden;
 }
 
@@ -76,6 +79,11 @@ th{
 tr:hover{
   background:rgba(255,255,255,0.05);
 }
+
+/* ROLE COLORS */
+.role-champion{color:#ffd700;font-weight:bold}
+.role-elite{color:#c0c0c0;font-weight:bold}
+.role-top{color:#1e90ff;font-weight:bold}
 
 @media(max-width:700px){
   th,td{font-size:14px}
@@ -107,6 +115,7 @@ tr:hover{
       <th>Best Level</th>
       <th>Rank</th>
       <th>Score</th>
+      <th>Role</th>
     </tr>
   </table>
 </div>
@@ -115,6 +124,7 @@ tr:hover{
 const levels = JSON.parse(localStorage.getItem("levels")) || [];
 const records = JSON.parse(localStorage.getItem("records")) || [];
 
+/* PUAN SİSTEMİ */
 function calculateScore(rank){
   if(rank <= 10) return 150;
   if(rank <= 20) return 120;
@@ -124,12 +134,11 @@ function calculateScore(rank){
   return 0;
 }
 
-// SADECE ONAYLANMIŞ RECORDLAR
+/* SADECE ONAYLI RECORD */
 const approved = records.filter(r => r.approved);
-
-// OYUNCUYA GÖRE EN İYİ RECORD
 const players = {};
 
+/* OYUNCUYA GÖRE EN İYİ RECORD */
 approved.forEach(r=>{
   const lvl = levels.find(l=>l.name === r.level);
   if(!lvl) return;
@@ -146,13 +155,28 @@ approved.forEach(r=>{
   }
 });
 
-// ARRAY + SIRALAMA
+/* SIRALAMA */
 const sorted = Object.values(players)
   .sort((a,b)=>b.score - a.score);
 
 const table = document.getElementById("board");
 
+/* TABLOYA YAZ */
 sorted.forEach((p,i)=>{
+  let role = "";
+  let roleClass = "";
+
+  if(i === 0){
+    role = "Champion 🥇";
+    roleClass = "role-champion";
+  }else if(i <= 2){
+    role = "Elite 🥈";
+    roleClass = "role-elite";
+  }else if(i <= 9){
+    role = "Top Player";
+    roleClass = "role-top";
+  }
+
   table.innerHTML += `
     <tr>
       <td>${i+1}</td>
@@ -160,6 +184,7 @@ sorted.forEach((p,i)=>{
       <td>${p.level}</td>
       <td>#${p.rank}</td>
       <td>${p.score}</td>
+      <td class="${roleClass}">${role}</td>
     </tr>
   `;
 });
