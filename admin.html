@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+
+<style>
+body{
+  background: linear-gradient(135deg, #081a3a, #3a0a0a);
+  font-family: Arial;
+  color:white;
+  margin:0;
+}
+
+.container{
+  max-width:900px;
+  margin:80px auto;
+  background:rgba(0,0,0,0.7);
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 0 30px rgba(0,0,0,0.5);
+}
+
+h1{
+  text-align:center;
+  color:#1e90ff;
+}
+
+input, button{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  font-size:16px;
+  border-radius:8px;
+  border:none;
+}
+
+input{
+  background:#111;
+  color:white;
+}
+
+button{
+  background:#1e90ff;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#0077ff;
+}
+
+.hidden{display:none;}
+
+.card{
+  background:#111;
+  padding:14px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Admin Login</h1>
+
+<div id="login">
+  <input type="password" id="password" placeholder="Admin Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<div id="panel" class="hidden">
+  <h1>Level Manager</h1>
+
+  <input id="rank" placeholder="Rank (#)">
+  <input id="name" placeholder="Level Name">
+  <input id="creator" placeholder="Creator">
+  <input id="verifier" placeholder="Verifier">
+  <button onclick="addLevel()">Add Level</button>
+
+  <div id="levels"></div>
+</div>
+
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>
