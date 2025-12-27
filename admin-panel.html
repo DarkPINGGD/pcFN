@@ -67,6 +67,16 @@ function save(){
   localStorage.setItem("levels",JSON.stringify(levels));
   render();
 }
+function approveRecord(id){
+  const rec = records.find(r=>r.id===id);
+  rec.approved = true;
+
+  const level = levels.find(l=>l.name===rec.level);
+  if(level && !level.firstVictor){
+    level.firstVictor = rec.nick;
+  }
+  save();
+}
 
 function render(){
   levelsDiv.innerHTML="";
@@ -77,6 +87,7 @@ function render(){
         First Victor: ${l.firstVictor}<br>
         <button onclick="deleteLevel(${l.id})">Delete</button>
       </div><hr>
+
     `;
   });
 }
