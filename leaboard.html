@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Leaderboard – GD Holland List</title>
-
 <style>
 body{
   margin:0;
@@ -11,7 +10,6 @@ body{
   background:linear-gradient(135deg,#081a3a,#3a0a0a);
   color:white;
 }
-
 .menu{
   position:fixed;
   top:20px;
@@ -19,34 +17,28 @@ body{
   display:flex;
   gap:20px;
 }
-
 .menu a{
   color:white;
   text-decoration:none;
   font-weight:bold;
 }
-
-.header{
+h1{
   text-align:center;
-  margin-top:80px;
+  margin-top:90px;
+  background:linear-gradient(90deg,#1e90ff,#ff2b2b);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
-
-.container{
-  max-width:900px;
-  margin:40px auto;
-}
-
 table{
-  width:100%;
+  width:80%;
+  margin:40px auto;
   border-collapse:collapse;
-  background:rgba(0,0,0,0.65);
+  background:rgba(0,0,0,0.6);
 }
-
 th,td{
   padding:12px;
   border-bottom:1px solid rgba(255,255,255,0.2);
 }
-
 th{color:#1e90ff}
 </style>
 </head>
@@ -60,33 +52,30 @@ th{color:#1e90ff}
   <a href="admin.html">Admin</a>
 </div>
 
-<div class="header">
-  <h1>Leaderboard</h1>
-</div>
+<h1>Leaderboard</h1>
 
-<div class="container">
 <table id="board">
 <tr>
   <th>#</th>
   <th>Player</th>
-  <th>Score</th>
+  <th>Approved Records</th>
 </tr>
 </table>
-</div>
 
 <script>
 const records = JSON.parse(localStorage.getItem("records")) || [];
 const players = {};
 
-records.filter(r=>r.approved).forEach(r=>{
-  players[r.nick]=(players[r.nick]||0)+1;
+records.forEach(r=>{
+  if(!r.approved) return;
+  players[r.nick] = (players[r.nick] || 0) + 1;
 });
 
 const sorted = Object.entries(players).sort((a,b)=>b[1]-a[1]);
-const table=document.getElementById("board");
+const table = document.getElementById("board");
 
 sorted.forEach((p,i)=>{
-  table.innerHTML+=`
+  table.innerHTML += `
     <tr>
       <td>${i+1}</td>
       <td>${p[0]}</td>
