@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Level Leaderboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  background:linear-gradient(135deg,#081a3a,#3a0a0a);
+  color:white;
+  font-family:Arial;
+}
+.container{
+  max-width:800px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:rgba(0,0,0,0.7);
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1 id="lvl"></h1>
+  <div id="list"></div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const levelName = params.get("level");
+lvl.innerText = levelName;
+
+const records = JSON.parse(localStorage.getItem("records"))||[];
+
+records
+.filter(r=>r.level===levelName && r.approved)
+.forEach((r,i)=>{
+  list.innerHTML+=`
+    <div class="card">
+      #${i+1} ${r.nick} <br>
+      <a href="${r.yt}" target="_blank">Video</a>
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>
